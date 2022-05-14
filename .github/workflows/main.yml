@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: CI
+name: TestCICD
 
 # Controls when the workflow will run
 on:
@@ -34,3 +34,17 @@ jobs:
         run: |
           echo Add other actions to build,
           echo test, and deploy your project.
+  deploy-surecheq:
+      name:  TestCICD
+      if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/dev')
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@master
+        - name: Deploy App to server
+          uses: appleboy/scp-action@master
+          with:
+            host: ${{ secrets.SSH_HOST }}
+            username: ${{ secrets.SSH_USERNAME }}
+            password: ${{ secrets.SSH_PASSWORD }}
+            source: "*"
+            target: "/var/www/surecheq"
